@@ -1,7 +1,6 @@
 package com.jacob.unsplash;
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
@@ -9,12 +8,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.jacob.unsplash.api.UnSplashRepository;
-import com.jacob.unsplash.model.Photo;
 import com.jacob.unsplash.view.MainViewFragment;
 
-import java.util.List;
-
-public class MainActivity extends AppCompatActivity implements SearchView.OnQueryTextListener, UnSplashRepository.Listener {
+public class MainActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
 
     private UnSplashRepository repository;
 
@@ -25,13 +21,14 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        MainViewFragment fragment = MainViewFragment.newInstance();
         getSupportFragmentManager()
                 .beginTransaction()
-                .add(R.id.root_frame_layout, MainViewFragment.newInstance(), MainViewFragment.TAG)
+                .add(R.id.root_frame_layout, fragment, MainViewFragment.TAG)
                 .commit();
 
         repository = UnSplashRepository.getInstance();
-        repository.setListener(this);
+        repository.setListener(fragment);
     }
 
     @Override
@@ -51,28 +48,12 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
     @Override
     public boolean onQueryTextSubmit(String newExpression) {
-        repository.searchInBackfround(newExpression);
+        repository.searchFor(newExpression);
         return true;
     }
 
     @Override
-    public void onSuccess(List<Photo> photos) {
-        Fragment fragment = getSupportFragmentManager().findFragmentByTag(MainViewFragment.TAG);
-        if (fragment instanceof MainViewFragment) {
-            ((MainViewFragment) fragment).setList(photos);
-        }
-    }
-
-    @Override
-    public void onFail(String message) {
-        Fragment fragment = getSupportFragmentManager().findFragmentByTag(MainViewFragment.TAG);
-        if (fragment instanceof MainViewFragment) {
-            ((MainViewFragment) fragment).onFail(message);
-        }
-    }
-
-    @Override
     public boolean onQueryTextChange(String newExpression) {
-        return false;
+        return true;
     }
 }

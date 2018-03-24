@@ -57,7 +57,7 @@ public class UnSplashRepository {
         mListener = listener;
     }
 
-    public void searchInBackfround(final String searchExp) {
+    public void searchFor(final String searchExp) {
         ExecutorHelper.submit(new Runnable() {
             @Override
             public void run() {
@@ -68,7 +68,7 @@ public class UnSplashRepository {
 
     private void search(String searchExp) {
         try {
-            Call<ResponseModel> call = getService().search(1, 30, searchExp);
+            Call<ResponseModel> call = getService().search(1, 50, searchExp);
             Response<ResponseModel> response = call.execute();
 
             if (response.code() == HttpURLConnection.HTTP_OK) {
