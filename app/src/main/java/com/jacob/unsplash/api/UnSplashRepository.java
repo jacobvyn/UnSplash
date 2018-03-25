@@ -57,16 +57,16 @@ public class UnSplashRepository {
         mListener = listener;
     }
 
-    public void searchFor(final String searchExp) {
+    public void search(final String searchExp) {
         ExecutorHelper.submit(new Runnable() {
             @Override
             public void run() {
-                search(searchExp);
+                searchFor(searchExp);
             }
         });
     }
 
-    private void search(String searchExp) {
+    private void searchFor(String searchExp) {
         try {
             Call<ResponseModel> call = getService().search(1, 50, searchExp);
             Response<ResponseModel> response = call.execute();
@@ -85,8 +85,7 @@ public class UnSplashRepository {
     private List<Photo> getPhotos(ResponseModel responseModel) {
         List<Photo> photoList = new ArrayList<Photo>();
         for (Result result : responseModel.getResults()) {
-            Photo photo = new Photo(result.getUrls());
-            photoList.add(photo);
+            photoList.add(result.getPhotos());
         }
         return photoList;
     }

@@ -4,6 +4,7 @@ package com.jacob.unsplash.model;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -13,22 +14,22 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-    "id",
-    "created_at",
-    "updated_at",
-    "width",
-    "height",
-    "color",
-    "description",
-    "categories",
-    "user",
-    "urls",
-    "links",
-    "liked_by_user",
-    "sponsored",
-    "likes",
-    "current_user_collections",
-    "photo_tags"
+        "id",
+        "created_at",
+        "updated_at",
+        "width",
+        "height",
+        "color",
+        "description",
+        "categories",
+        "user",
+        "urls",
+        "links",
+        "liked_by_user",
+        "sponsored",
+        "likes",
+        "current_user_collections",
+        "photo_tags"
 })
 public class Result {
 
@@ -51,7 +52,7 @@ public class Result {
     @JsonProperty("user")
     private User user;
     @JsonProperty("urls")
-    private Urls urls;
+    private Photo photos;
     @JsonProperty("links")
     private Links links;
     @JsonProperty("liked_by_user")
@@ -158,13 +159,13 @@ public class Result {
     }
 
     @JsonProperty("urls")
-    public Urls getUrls() {
-        return urls;
+    public Photo getPhotos() {
+        return photos;
     }
 
     @JsonProperty("urls")
-    public void setUrls(Urls urls) {
-        this.urls = urls;
+    public void setPhotos(Photo urls) {
+        this.photos = urls;
     }
 
     @JsonProperty("links")

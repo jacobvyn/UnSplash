@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/detail_fragment_root"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_centerInParent="true"
+    android:background="@color/colorPrimaryDark">
+
+    <ImageView
+        android:id="@+id/picture_image_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <com.wang.avi.AVLoadingIndicatorView
+        android:id="@+id/progress_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        app:indicatorName="BallPulseIndicator" />
+
+    <LinearLayout
+        android:id="@+id/item_controls_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_margin="@dimen/item_controls_layout_margin"
+        android:visibility="visible">
+
+        <ImageView
+            android:id="@+id/item_download_image_view"
+            android:layout_width="@dimen/item_download_image_view_width"
+            android:layout_height="@dimen/item_download_image_view_height"
+            android:padding="@dimen/item_control_padding"
+            android:src="@android:drawable/ic_menu_save" />
+
+        <ImageView
+            android:id="@+id/item_share_image_view"
+            android:layout_width="@dimen/item_share_image_view_width"
+            android:layout_height="@dimen/item_share_image_view_height"
+            android:padding="@dimen/item_control_padding"
+            android:src="@android:drawable/ic_menu_share" />
+    </LinearLayout>
+</RelativeLayout>
+

@@ -11,13 +11,12 @@
         android:layout_height="wrap_content"
         android:theme="@style/AppTheme.AppBarOverlay">
 
-
         <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
+            android:id="@+id/toolbar_main"
+            android:elevation="4dp"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:theme="@style/MyActionBar"
-            app:layout_collapseMode="pin" />
+            android:theme="@style/MyActionBar" />
 
     </android.support.design.widget.AppBarLayout>
 

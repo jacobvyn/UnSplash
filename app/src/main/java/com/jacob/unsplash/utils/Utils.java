@@ -5,34 +5,27 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Environment;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-import android.widget.Toast;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.type.CollectionType;
-import com.jacob.unsplash.R;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import android.widget.ImageView;
 
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 
 public class Utils {
     public static final String LOG_TAG = Utils.class.getSimpleName();
@@ -190,7 +183,7 @@ public class Utils {
         }
     }
 
-    private static void closeQuietly(ByteArrayOutputStream outputStream) {
+    private static void closeQuietly(Closeable outputStream) {
         try {
             outputStream.close();
         } catch (IOException e) {
@@ -249,38 +242,6 @@ public class Utils {
             editText.setClickable(false);
         }
     }
-//
-//    public static String toJson(Client sClient) {
-//        ObjectMapper mapper = new ObjectMapper();
-//        try {
-//            return mapper.writeValueAsString(sClient);
-//        } catch (JsonProcessingException e) {
-//            e.printStackTrace();
-//        }
-//        return "";
-//    }
-//
-//    public static String toJson(List<Client> clientList) {
-//        ObjectMapper mapper = new ObjectMapper();
-//        try {
-//            return mapper.writeValueAsString(clientList);
-//        } catch (JsonProcessingException e) {
-//            e.printStackTrace();
-//        }
-//        return "";
-//    }
-//
-//    public static byte[] listToByteArr(ArrayList<Client> list) {
-//        try {
-//            ByteArrayOutputStream out = new ByteArrayOutputStream();
-//            ObjectMapper mapper = new ObjectMapper();
-//            mapper.writeValue(out, list);
-//            out.toByteArray();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        return new byte[0];
-//    }
 
     public static boolean isOnline(Context context) {
         try {
@@ -294,24 +255,52 @@ public class Utils {
         return false;
     }
 
-    public static int getInt(String str) {
-        try {
-            return Integer.parseInt(str);
-        } catch (NumberFormatException e) {
-            e.printStackTrace();
+    public static void saveImage(ImageView imageView, Callback callback) {
+        Bitmap bitmap = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
+        File outputFile = createOutputFile();
+        boolean result = writeBitmapTo(bitmap, outputFile);
+
+        if (result) {
+            callback.onSaveSuccess(outputFile);
+        } else {
+            callback.onSaveFail();
         }
-        return 1;
     }
 
-    private static JSONArray getJsonClientsArray(String jsonResponseString) throws JSONException {
-        JSONObject jsonResponse = new JSONObject(jsonResponseString);
-        return (JSONArray) jsonResponse.get("Response");
+
+    private static boolean writeBitmapTo(Bitmap bitmap, File outputFile) {
+        if (isExternalStorageAvailable() && !isExternalStorageReadOnly()) {
+            FileOutputStream outStream = null;
+            try {
+                outStream = new FileOutputStream(outputFile);
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outStream);
+                outStream.flush();
+                return true;
+            } catch (IOException e) {
+                e.printStackTrace();
+                return false;
+            } finally {
+                closeQuietly(outStream);
+            }
+        } else {
+            Log.i(LOG_TAG, "Couldn't write log. Read-only file system.");
+            return false;
+        }
     }
 
-//    public static List<Client> parseResponse(String jsonResponseString) throws IOException, JSONException {
-//        JSONArray jsonClientsArray = getJsonClientsArray(jsonResponseString);
-//        ObjectMapper mapper = new ObjectMapper();
-//        CollectionType collectionType = mapper.getTypeFactory().constructCollectionType(List.class, Client.class);
-//        return mapper.readValue(jsonClientsArray.toString(), collectionType);
-//    }
+    private static File createOutputFile() {
+        File sdCard = Environment.getExternalStorageDirectory();
+        File dir = new File(sdCard.getAbsolutePath() + "/UnSplash");
+        if (!dir.mkdirs()) {
+            Log.e(LOG_TAG, "Could not create file" + dir.getAbsolutePath());
+        }
+        String fileName = String.format("%d.jpg", System.currentTimeMillis());
+        return new File(dir, fileName);
+    }
+
+    public interface Callback {
+        void onSaveSuccess(File file);
+
+        void onSaveFail();
+    }
 }

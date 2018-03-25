@@ -41,7 +41,6 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
         Photo photo = mPhotoList.get(position);
         Picasso.get()
                 .load(photo.getSmall())
-//                .placeholder(R.drawable.place_holder)
                 .error(R.drawable.download_error_place_holder)
                 .into(holder.imageView);
     }
@@ -61,6 +60,10 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
         notifyDataSetChanged();
     }
 
+    private Photo getItem(int position) {
+        return mPhotoList.get(position);
+    }
+
     protected class PhotoViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private final ImageView imageView;
 
@@ -73,12 +76,12 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
         @Override
         public void onClick(View view) {
             if (mListener != null) {
-                mListener.onItemClicked();
+                mListener.onItemClicked(getItem(getAdapterPosition()));
             }
         }
     }
 
     public interface OnItemClickListener {
-        void onItemClicked();
+        void onItemClicked(Photo photo);
     }
 }
