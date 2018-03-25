@@ -10,9 +10,10 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 
-import com.jacob.unsplash.DetailActivity;
 import com.jacob.unsplash.R;
 import com.jacob.unsplash.model.Photo;
 import com.jacob.unsplash.utils.Utils;
@@ -43,6 +44,7 @@ public class ItemViewFragment extends Fragment implements Callback, Utils.Callba
     protected View mRootView;
     private Photo mPhoto;
     private Unbinder mUnBinder;
+    private Animation mAlphaAnim;
 
     public static ItemViewFragment newInstance(Photo photo) {
         Bundle bundle = new Bundle();
@@ -62,6 +64,7 @@ public class ItemViewFragment extends Fragment implements Callback, Utils.Callba
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        mAlphaAnim = AnimationUtils.loadAnimation(getActivity(), R.anim.alpha);
         mPhoto = getPhoto(getArguments());
         if (mProgressBar != null) {
             mProgressBar.smoothToShow();
@@ -89,15 +92,23 @@ public class ItemViewFragment extends Fragment implements Callback, Utils.Callba
     }
 
     @OnClick(R.id.item_share_image_view)
-    protected void onShareCLick() {
+    protected void onShareCLick(View view) {
+        animate(view);
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.setType(TYPE_TEXT_PLAIN);
         shareIntent.putExtra(Intent.EXTRA_TEXT, mPhoto.getRegular());
         startActivity(Intent.createChooser(shareIntent, getString(R.string.share_picture)));
     }
 
+    private void animate(View view) {
+        if (view != null) {
+            view.startAnimation(mAlphaAnim);
+        }
+    }
+
     @OnClick(R.id.item_download_image_view)
-    protected void onDownloadClick() {
+    protected void onDownloadClick(View view) {
+        animate(view);
         Utils.saveImage(mPictureImageView, this);
     }
 

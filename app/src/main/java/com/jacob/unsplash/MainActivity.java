@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
         repository = UnSplashRepository.getInstance();
         repository.setListener((UnSplashRepository.Listener) fragment);
-//        repository.search("cars");
+        repository.search("cars");
     }
 
     @Override
