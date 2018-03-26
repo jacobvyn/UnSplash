@@ -21,15 +21,14 @@
         <item name="android:cursorVisible">true</item>
     </style>
 
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
-        <!--<item name="colorPrimary">@color/colorPrimary</item>-->
-        <!--<item name="colorPrimaryDark">@color/colorPrimaryDark</item>-->
-    </style>
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
     <style name="CircularProgress" parent="Theme.AppCompat.Light">
         <item name="colorAccent">@android:color/holo_red_light</item>
     </style>
+
+    <style name="MyProgressBarMaterial" parent="Widget.AppCompat.ProgressBar.Horizontal" />
 
 </resources>

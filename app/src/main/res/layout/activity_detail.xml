@@ -6,6 +6,8 @@
     android:background="@color/colorPrimaryDark">
 
     <android.support.design.widget.AppBarLayout
+        android:id="@+id/toolbar_item_layout"
+
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
@@ -24,5 +26,6 @@
         android:id="@+id/item_view_container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
+
 </RelativeLayout>
 

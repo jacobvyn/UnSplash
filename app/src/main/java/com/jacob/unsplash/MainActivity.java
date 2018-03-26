@@ -1,6 +1,7 @@
 package com.jacob.unsplash;
 
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
@@ -9,12 +10,20 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.jacob.unsplash.api.UnSplashRepository;
+import com.jacob.unsplash.model.Photo;
 import com.jacob.unsplash.utils.Utils;
 import com.jacob.unsplash.view.GalleryFragment;
 
-public class MainActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
+import java.util.ArrayList;
+import java.util.List;
 
+public class MainActivity extends AppCompatActivity
+        implements SearchView.OnQueryTextListener,
+        UnSplashRepository.Listener {
+
+    private static final String ARG_LIST = "ARG_LIST";
     private UnSplashRepository repository;
+    private final ArrayList<Photo> mInMemoryDataBase = new ArrayList<Photo>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,18 +32,27 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_main);
         setSupportActionBar(toolbar);
 
-        Fragment fragment = getSupportFragmentManager().findFragmentByTag(GalleryFragment.TAG);
+        GalleryFragment fragment = (GalleryFragment) getSupportFragmentManager().findFragmentByTag(GalleryFragment.TAG);
         if (fragment == null) {
             fragment = GalleryFragment.newInstance();
             getSupportFragmentManager()
                     .beginTransaction()
-                    .add(R.id.root_frame_layout, fragment, GalleryFragment.TAG)
+                    .add(R.id.gallery_fragment_container, fragment, GalleryFragment.TAG)
                     .commit();
         }
 
         repository = UnSplashRepository.getInstance();
-        repository.setListener((UnSplashRepository.Listener) fragment);
-        repository.search("cars");
+        repository.setListener(this);
+
+        if (savedInstanceState != null) {
+            addToDB((ArrayList<Photo>) savedInstanceState.get(ARG_LIST));
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putParcelableArrayList(ARG_LIST, mInMemoryDataBase);
+        super.onSaveInstanceState(outState);
     }
 
     @Override
@@ -56,11 +74,42 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     public boolean onQueryTextSubmit(String newExpression) {
         repository.search(newExpression);
         Utils.hideSoftKeyboard(this);
+        onSearchStart();
         return true;
+    }
+
+    private void onSearchStart() {
+        Fragment fragment = getSupportFragmentManager().findFragmentByTag(GalleryFragment.TAG);
+        if (fragment instanceof GalleryFragment) {
+            ((GalleryFragment) fragment).onSearchStart();
+        }
     }
 
     @Override
     public boolean onQueryTextChange(String newExpression) {
-        return true;
+        return false;
+    }
+
+    @Override
+    public void onSuccess(List<Photo> photos) {
+        addToDB(photos);
+        Fragment fragment = getSupportFragmentManager().findFragmentByTag(GalleryFragment.TAG);
+        if (fragment instanceof GalleryFragment) {
+            ((GalleryFragment) fragment).setList(photos);
+        }
+    }
+
+    @Override
+    public void onFail(String message) {
+        Snackbar.make(findViewById(R.id.activity_main_root), message, Snackbar.LENGTH_LONG).show();
+    }
+
+    private void addToDB(List<Photo> photos) {
+        mInMemoryDataBase.clear();
+        mInMemoryDataBase.addAll(photos);
+    }
+
+    public ArrayList<Photo> getData() {
+        return new ArrayList<>(mInMemoryDataBase);
     }
 }

@@ -16,6 +16,7 @@ import android.widget.ImageView;
 
 import com.jacob.unsplash.R;
 import com.jacob.unsplash.model.Photo;
+import com.jacob.unsplash.utils.PermissionHelper;
 import com.jacob.unsplash.utils.Utils;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
@@ -109,18 +110,31 @@ public class ItemViewFragment extends Fragment implements Callback, Utils.Callba
     @OnClick(R.id.item_download_image_view)
     protected void onDownloadClick(View view) {
         animate(view);
-        Utils.saveImage(mPictureImageView, this);
+        if (PermissionHelper.hasPermission(getActivity())) {
+            Utils.saveImage(mPictureImageView, this);
+        } else {
+            PermissionHelper.requestPermission(getActivity());
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (PermissionHelper.hasPermission(getActivity())) {
+            Utils.saveImage(mPictureImageView, this);
+        } else {
+            Snackbar.make(getView(), R.string.error_need_permission, Snackbar.LENGTH_LONG).show();
+        }
     }
 
     @Override
     public void onSaveSuccess(File file) {
         notifyMediaScanner(file);
-        Snackbar.make(mRootView, "Photo successfully saved.", Snackbar.LENGTH_LONG).show();
+        Snackbar.make(mRootView, R.string.success_save, Snackbar.LENGTH_LONG).show();
     }
 
     @Override
     public void onSaveFail() {
-        Snackbar.make(mRootView, "Failed to successfully a photo.", Snackbar.LENGTH_LONG).show();
+        Snackbar.make(mRootView, R.string.error_fail_save, Snackbar.LENGTH_LONG).show();
     }
 
     private void notifyMediaScanner(File outputFile) {
