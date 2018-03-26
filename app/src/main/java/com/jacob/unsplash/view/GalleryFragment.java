@@ -13,12 +13,11 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.jacob.unsplash.DetailActivity;
-import com.jacob.unsplash.MainActivity;
+import com.jacob.unsplash.MockDataBase;
 import com.jacob.unsplash.R;
 import com.jacob.unsplash.model.Photo;
 import com.jacob.unsplash.view.adapter.PhotoAdapter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -57,11 +56,9 @@ public class GalleryFragment extends Fragment
     }
 
     private void loadFromDataBase() {
-        if (getActivity() instanceof MainActivity) {
-            ArrayList<Photo> data = ((MainActivity) getActivity()).getData();
-            if (data.size() > 0) {
-                setList(data);
-            }
+        MockDataBase db = MockDataBase.getInstance();
+        if (db.isDataAvailable()) {
+            setList(db.getData());
         }
     }
 

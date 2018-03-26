@@ -25,7 +25,7 @@ public class DetailActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_item);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle("");
+        getSupportActionBar().setTitle(R.string.picture_view);
 
         final Bundle bundle = getIntent().getExtras();
         Photo photo = (Photo) bundle.getParcelable(ItemViewFragment.ARG_PHOTO);

@@ -23,7 +23,6 @@ public class MainActivity extends AppCompatActivity
 
     private static final String ARG_LIST = "ARG_LIST";
     private UnSplashRepository repository;
-    private final ArrayList<Photo> mInMemoryDataBase = new ArrayList<Photo>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,13 +44,14 @@ public class MainActivity extends AppCompatActivity
         repository.setListener(this);
 
         if (savedInstanceState != null) {
-            addToDB((ArrayList<Photo>) savedInstanceState.get(ARG_LIST));
+            ArrayList<Photo> photos = (ArrayList<Photo>) savedInstanceState.get(ARG_LIST);
+            MockDataBase.getInstance().setData(photos);
         }
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        outState.putParcelableArrayList(ARG_LIST, mInMemoryDataBase);
+        outState.putParcelableArrayList(ARG_LIST, MockDataBase.getInstance().getData());
         super.onSaveInstanceState(outState);
     }
 
@@ -92,7 +92,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onSuccess(List<Photo> photos) {
-        addToDB(photos);
+        MockDataBase.getInstance().setData(photos);
         Fragment fragment = getSupportFragmentManager().findFragmentByTag(GalleryFragment.TAG);
         if (fragment instanceof GalleryFragment) {
             ((GalleryFragment) fragment).setList(photos);
@@ -102,14 +102,5 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onFail(String message) {
         Snackbar.make(findViewById(R.id.activity_main_root), message, Snackbar.LENGTH_LONG).show();
-    }
-
-    private void addToDB(List<Photo> photos) {
-        mInMemoryDataBase.clear();
-        mInMemoryDataBase.addAll(photos);
-    }
-
-    public ArrayList<Photo> getData() {
-        return new ArrayList<>(mInMemoryDataBase);
     }
 }
