@@ -1,4 +1,4 @@
-package com.jacob.unsplash;
+package com.jacob.unsplash.db;
 
 import com.jacob.unsplash.model.Photo;
 
@@ -32,7 +32,9 @@ public class MockDataBase {
     }
 
     public void setData(List<Photo> list) {
-        mInMemoryDB.clear();
-        mInMemoryDB.addAll(list);
+        if (list.size() > 0) {
+            mInMemoryDB.clear();
+            mInMemoryDB.addAll(list);
+        }
     }
 }

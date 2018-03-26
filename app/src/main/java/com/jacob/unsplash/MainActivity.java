@@ -9,7 +9,9 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.jacob.unsplash.R;
 import com.jacob.unsplash.api.UnSplashRepository;
+import com.jacob.unsplash.db.MockDataBase;
 import com.jacob.unsplash.model.Photo;
 import com.jacob.unsplash.utils.Utils;
 import com.jacob.unsplash.view.GalleryFragment;

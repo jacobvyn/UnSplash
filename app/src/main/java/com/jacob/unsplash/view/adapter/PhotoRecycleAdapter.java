@@ -19,13 +19,13 @@ import java.util.List;
  * Created by vynnykiakiv on 3/24/18.
  */
 
-public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHolder> {
+public class PhotoRecycleAdapter extends RecyclerView.Adapter<PhotoRecycleAdapter.PhotoViewHolder> {
     private final List<Photo> mPhotoList = new ArrayList<Photo>();
 
     private Context mContext;
     private OnItemClickListener mListener;
 
-    public PhotoAdapter(Context context) {
+    public PhotoRecycleAdapter(Context context) {
         mContext = context;
     }
 
@@ -76,12 +76,12 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
         @Override
         public void onClick(View view) {
             if (mListener != null) {
-                mListener.onItemClicked(getItem(getAdapterPosition()));
+                mListener.onItemClicked(getItem(getAdapterPosition()), getAdapterPosition());
             }
         }
     }
 
     public interface OnItemClickListener {
-        void onItemClicked(Photo photo);
+        void onItemClicked(Photo photo, int position);
     }
 }

@@ -5,7 +5,7 @@ import android.os.Looper;
 
 import com.jacob.unsplash.model.Result;
 import com.jacob.unsplash.network.CacheControlInterceptor;
-import com.jacob.unsplash.MyApp;
+import com.jacob.unsplash.App;
 import com.jacob.unsplash.model.Photo;
 import com.jacob.unsplash.model.ResponseModel;
 import com.jacob.unsplash.network.HeaderInterceptor;
@@ -32,7 +32,7 @@ import retrofit2.converter.jackson.JacksonConverterFactory;
 public class UnSplashRepository {
     private static final String BASE_URL = "https://api.unsplash.com";
     private static UnSplashRepository sUnSplashRepository;
-    private static File sCacheDir = new File(MyApp.getContext().getCacheDir(), "cache");
+    private static File sCacheDir = new File(App.getContext().getCacheDir(), "cache");
     private static int sCacheSize = 5 * 1024 * 1024;
     private static Cache sCache = new Cache(sCacheDir, sCacheSize);
     private static OkHttpClient sClient = new OkHttpClient.Builder()

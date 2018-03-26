@@ -1,6 +1,7 @@
 
 package com.jacob.unsplash.model;
 
+import android.graphics.Bitmap;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -35,6 +36,8 @@ public class Photo implements Parcelable {
     private String thumb;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+    @JsonIgnore
+    private Bitmap bitmap;
 
     public Photo() {
     }
@@ -132,4 +135,11 @@ public class Photo implements Parcelable {
         this.additionalProperties.put(name, value);
     }
 
+    public void setBitmap(Bitmap bitmap) {
+        this.bitmap = bitmap;
+    }
+
+    public Bitmap getBitmap() {
+        return bitmap;
+    }
 }

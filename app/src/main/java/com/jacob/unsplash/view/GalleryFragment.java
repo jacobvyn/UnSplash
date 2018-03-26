@@ -12,11 +12,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.jacob.unsplash.DetailActivity;
-import com.jacob.unsplash.MockDataBase;
+import com.jacob.unsplash.db.MockDataBase;
 import com.jacob.unsplash.R;
 import com.jacob.unsplash.model.Photo;
-import com.jacob.unsplash.view.adapter.PhotoAdapter;
+import com.jacob.unsplash.utils.Constants;
+import com.jacob.unsplash.view.adapter.PhotoRecycleAdapter;
 
 import java.util.List;
 
@@ -26,11 +26,11 @@ import java.util.List;
  */
 
 public class GalleryFragment extends Fragment
-        implements PhotoAdapter.OnItemClickListener {
+        implements PhotoRecycleAdapter.OnItemClickListener {
 
     public static final String TAG = GalleryFragment.class.getName();
     private static final int COLUMNS = 2;
-    private PhotoAdapter mAdapter;
+    private PhotoRecycleAdapter mAdapter;
     private View mProgressBar;
 
     public static GalleryFragment newInstance() {
@@ -49,7 +49,7 @@ public class GalleryFragment extends Fragment
         RecyclerView recyclerView = view.findViewById(R.id.recycler_view);
         GridLayoutManager manager = new GridLayoutManager(getActivity(), COLUMNS);
         recyclerView.setLayoutManager(manager);
-        mAdapter = new PhotoAdapter(getActivity());
+        mAdapter = new PhotoRecycleAdapter(getActivity());
         mAdapter.setOnCLickListener(this);
         recyclerView.setAdapter(mAdapter);
         loadFromDataBase();
@@ -63,19 +63,20 @@ public class GalleryFragment extends Fragment
     }
 
     @Override
-    public void onItemClicked(Photo photo) {
+    public void onItemClicked(Photo photo, int position) {
         Intent intent = new Intent(getActivity(), DetailActivity.class);
-        intent.putExtra(ItemViewFragment.ARG_PHOTO, photo);
+        intent.putExtra(Constants.ARG_PHOTO, photo);
+        intent.putExtra(Constants.ARG_POSITION, position);
         getActivity().startActivity(intent);
     }
 
     public void setList(List<Photo> photos) {
         if (mAdapter != null && photos.size() > 0) {
             mAdapter.setList(photos);
-            onSearchFinish();
         } else {
             Snackbar.make(getView(), getString(R.string.error_nothing_found), Snackbar.LENGTH_LONG).show();
         }
+        onSearchFinish();
     }
 
     public void onSearchStart() {

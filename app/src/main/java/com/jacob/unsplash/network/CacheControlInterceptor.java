@@ -1,6 +1,6 @@
 package com.jacob.unsplash.network;
 
-import com.jacob.unsplash.MyApp;
+import com.jacob.unsplash.App;
 import com.jacob.unsplash.utils.Utils;
 
 import java.io.IOException;
@@ -17,7 +17,7 @@ public class CacheControlInterceptor implements Interceptor {
     @Override
     public Response intercept(Chain chain) throws IOException {
         Response originalResponse = chain.proceed(chain.request());
-        if (Utils.isOnline(MyApp.getContext())) {
+        if (Utils.isOnline(App.getContext())) {
             int maxAge = 60;
             return originalResponse.newBuilder()
                     .removeHeader("Pragma")

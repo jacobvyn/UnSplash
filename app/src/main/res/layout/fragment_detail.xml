@@ -18,29 +18,5 @@
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         app:indicatorName="BallPulseIndicator" />
-
-    <LinearLayout
-        android:id="@+id/item_controls_layout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
-        android:layout_margin="@dimen/item_controls_layout_margin"
-        android:visibility="visible">
-
-        <ImageView
-            android:id="@+id/item_download_image_view"
-            android:layout_width="@dimen/item_download_image_view_width"
-            android:layout_height="@dimen/item_download_image_view_height"
-            android:padding="@dimen/item_control_padding"
-            android:src="@android:drawable/ic_menu_save" />
-
-        <ImageView
-            android:id="@+id/item_share_image_view"
-            android:layout_width="@dimen/item_share_image_view_width"
-            android:layout_height="@dimen/item_share_image_view_height"
-            android:padding="@dimen/item_control_padding"
-            android:src="@android:drawable/ic_menu_share" />
-    </LinearLayout>
 </RelativeLayout>
 
