@@ -103,6 +103,9 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onFail(String message) {
-        Snackbar.make(findViewById(R.id.activity_main_root), message, Snackbar.LENGTH_LONG).show();
+        Fragment fragment = getSupportFragmentManager().findFragmentByTag(GalleryFragment.TAG);
+        if (fragment instanceof GalleryFragment) {
+            ((GalleryFragment) fragment).onFail(message);
+        }
     }
 }

@@ -90,4 +90,9 @@ public class GalleryFragment extends Fragment
             mProgressBar.setVisibility(View.GONE);
         }
     }
+
+    public void onFail(String message) {
+        onSearchFinish();
+        Snackbar.make(getView(), message, Snackbar.LENGTH_LONG).show();
+    }
 }
