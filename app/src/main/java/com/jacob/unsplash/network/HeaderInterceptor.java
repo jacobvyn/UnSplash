@@ -8,6 +8,7 @@ import okhttp3.Response;
 
 
 public class HeaderInterceptor implements Interceptor {
+    //should be in gradle.properties
     private String ID = "e7960320fd69c735d82e0670997083e4cd6c080bb19e23a83ecd742c37093061";
 
     @Override
