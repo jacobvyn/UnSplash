@@ -13,7 +13,9 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 
+import com.jacob.unsplash.DepthPageTransformer;
 import com.jacob.unsplash.R;
+import com.jacob.unsplash.ZoomOutPageTransformer;
 import com.jacob.unsplash.db.MockDataBase;
 import com.jacob.unsplash.model.Photo;
 import com.jacob.unsplash.utils.Constants;
@@ -53,6 +55,7 @@ public class DetailActivity extends AppCompatActivity implements ViewPager.OnPag
         Bundle bundle = getIntent().getExtras();
         mCurrentPos = bundle.getInt(Constants.ARG_POSITION);
         ViewPager pager = (ViewPager) findViewById(R.id.view_pager);
+        pager.setPageTransformer(true, new DepthPageTransformer());
         pager.setAdapter(new PhotoPagerAdapter(getSupportFragmentManager(), mData));
         pager.setOnPageChangeListener(this);
         pager.setCurrentItem(mCurrentPos);
