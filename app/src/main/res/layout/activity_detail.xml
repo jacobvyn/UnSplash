@@ -47,6 +47,7 @@
                 android:id="@+id/item_download_image_view"
                 android:layout_width="@dimen/item_download_image_view_width"
                 android:layout_height="@dimen/item_download_image_view_height"
+                android:background="?android:attr/selectableItemBackground"
                 android:padding="@dimen/item_control_padding"
                 android:src="@android:drawable/ic_menu_save" />
 
@@ -54,6 +55,7 @@
                 android:id="@+id/item_share_image_view"
                 android:layout_width="@dimen/item_share_image_view_width"
                 android:layout_height="@dimen/item_share_image_view_height"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
                 android:padding="@dimen/item_control_padding"
                 android:src="@android:drawable/ic_menu_share" />
         </LinearLayout>

@@ -9,8 +9,8 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
+import com.github.chrisbanes.photoview.PhotoView;
 import com.jacob.unsplash.R;
 import com.jacob.unsplash.model.Photo;
 import com.jacob.unsplash.utils.Constants;
@@ -29,7 +29,7 @@ import butterknife.Unbinder;
 public class ItemViewFragment extends Fragment implements Target {
 
     @BindView(R.id.picture_image_view)
-    protected ImageView mPictureImageView;
+    protected PhotoView mPictureImageView;
     @BindView(R.id.progress_bar)
     protected AVLoadingIndicatorView mProgressBar;
     @BindView(R.id.detail_fragment_root)

@@ -10,12 +10,9 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 
 import com.jacob.unsplash.DepthPageTransformer;
 import com.jacob.unsplash.R;
-import com.jacob.unsplash.ZoomOutPageTransformer;
 import com.jacob.unsplash.db.MockDataBase;
 import com.jacob.unsplash.model.Photo;
 import com.jacob.unsplash.utils.Constants;
@@ -36,7 +33,6 @@ public class DetailActivity extends AppCompatActivity implements ViewPager.OnPag
     private int mCurrentPos;
     @BindView(R.id.activity_detail_root)
     protected View mRootView;
-    private Animation mAlphaAnim;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -44,7 +40,6 @@ public class DetailActivity extends AppCompatActivity implements ViewPager.OnPag
         setContentView(R.layout.activity_detail);
         ButterKnife.bind(this);
 
-        mAlphaAnim = AnimationUtils.loadAnimation(this, R.anim.alpha);
         mData = MockDataBase.getInstance().getData();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_item);
@@ -63,22 +58,14 @@ public class DetailActivity extends AppCompatActivity implements ViewPager.OnPag
 
     @OnClick(R.id.item_share_image_view)
     protected void onShareCLick(View view) {
-        animate(view);
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.setType(TYPE_TEXT_PLAIN);
         shareIntent.putExtra(Intent.EXTRA_TEXT, mData.get(mCurrentPos).getRegular());
         startActivity(Intent.createChooser(shareIntent, getString(R.string.share_picture)));
     }
 
-    private void animate(View view) {
-        if (view != null) {
-            view.startAnimation(mAlphaAnim);
-        }
-    }
-
     @OnClick(R.id.item_download_image_view)
     protected void onDownloadClick(View view) {
-        animate(view);
         if (PermissionHelper.hasPermission(this)) {
             Utils.savePhoto(mData.get(mCurrentPos), this);
         } else {
