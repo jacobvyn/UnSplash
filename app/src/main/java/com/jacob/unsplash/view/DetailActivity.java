@@ -13,7 +13,6 @@ import android.view.View;
 
 import com.jacob.unsplash.DepthPageTransformer;
 import com.jacob.unsplash.R;
-import com.jacob.unsplash.db.MockDataBase;
 import com.jacob.unsplash.model.Photo;
 import com.jacob.unsplash.utils.Constants;
 import com.jacob.unsplash.utils.PermissionHelper;
@@ -40,14 +39,13 @@ public class DetailActivity extends AppCompatActivity implements ViewPager.OnPag
         setContentView(R.layout.activity_detail);
         ButterKnife.bind(this);
 
-        mData = MockDataBase.getInstance().getData();
-
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_item);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle(R.string.picture_view);
 
         Bundle bundle = getIntent().getExtras();
+        mData = bundle.getParcelableArrayList(Constants.ARG_PHOTO_LIST);
         mCurrentPos = bundle.getInt(Constants.ARG_POSITION);
         ViewPager pager = (ViewPager) findViewById(R.id.view_pager);
         pager.setPageTransformer(true, new DepthPageTransformer());

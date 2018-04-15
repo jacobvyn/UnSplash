@@ -7,4 +7,5 @@ package com.jacob.unsplash.utils;
 public class Constants {
     public static final String ARG_PHOTO = "ARG_PHOTO";
     public static final String ARG_POSITION = "ARG_POSITION";
+    public static final String ARG_PHOTO_LIST = "ARG_PHOTO_LIST";
 }

@@ -64,6 +64,10 @@ public class PhotoRecycleAdapter extends RecyclerView.Adapter<PhotoRecycleAdapte
         return mPhotoList.get(position);
     }
 
+    public ArrayList<Photo> getData() {
+        return new ArrayList<>(mPhotoList);
+    }
+
     protected class PhotoViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private final ImageView imageView;
 
