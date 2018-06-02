@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginTop="?attr/actionBarSize"
+    app:layout_behavior="com.jacob.unsplash.utils.MoveUpwardBehavior">
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/view_pager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <LinearLayout
+        android:id="@+id/item_controls_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_margin="@dimen/item_controls_layout_margin"
+        android:visibility="visible">
+
+        <ImageView
+            android:id="@+id/item_download_image_view"
+            android:layout_width="@dimen/item_download_image_view_width"
+            android:layout_height="@dimen/item_download_image_view_height"
+            android:background="@drawable/touch_feedback"
+            android:padding="@dimen/item_control_padding"
+            android:src="@android:drawable/ic_menu_save" />
+
+        <ImageView
+            android:id="@+id/item_share_image_view"
+            android:layout_width="@dimen/item_share_image_view_width"
+            android:layout_height="@dimen/item_share_image_view_height"
+            android:background="@drawable/touch_feedback"
+            android:padding="@dimen/item_control_padding"
+            android:src="@android:drawable/ic_menu_share" />
+    </LinearLayout>
+</RelativeLayout>

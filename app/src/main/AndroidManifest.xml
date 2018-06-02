@@ -29,7 +29,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".view.DetailActivity"
+            android:name=".PagerActivity"
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />

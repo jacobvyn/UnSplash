@@ -1,4 +1,4 @@
-package com.jacob.unsplash.view;
+package com.jacob.unsplash.view.pager;
 
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
@@ -26,7 +26,7 @@ import butterknife.Unbinder;
  * Created by vynnykiakiv on 3/26/18.
  */
 
-public class ItemViewFragment extends Fragment implements Target {
+public class PhotoFragment extends Fragment implements Target {
 
     @BindView(R.id.picture_image_view)
     protected PhotoView mPictureImageView;
@@ -37,10 +37,10 @@ public class ItemViewFragment extends Fragment implements Target {
     private Photo mPhoto;
     private Unbinder mUnBinder;
 
-    public static ItemViewFragment newInstance(Photo photo) {
+    public static PhotoFragment newInstance(Photo photo) {
         Bundle bundle = new Bundle();
         bundle.putParcelable(Constants.ARG_PHOTO, photo);
-        ItemViewFragment fragment = new ItemViewFragment();
+        PhotoFragment fragment = new PhotoFragment();
         fragment.setArguments(bundle);
         return fragment;
     }
@@ -48,7 +48,7 @@ public class ItemViewFragment extends Fragment implements Target {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_detail, container, false);
+        View view = inflater.inflate(R.layout.fragment_item_view_layout, container, false);
         mUnBinder = ButterKnife.bind(this, view);
         return view;
     }
@@ -56,10 +56,8 @@ public class ItemViewFragment extends Fragment implements Target {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         mPhoto = getPhoto(getArguments());
-        if (mProgressBar != null) {
-            mProgressBar.smoothToShow();
-        }
-        Picasso.get().load(mPhoto.getRegular())
+        showProgressBar(true);
+        Picasso.get().load(mPhoto.getSmall())
                 .error(android.R.drawable.stat_notify_error)
                 .into(this);
     }
@@ -68,20 +66,13 @@ public class ItemViewFragment extends Fragment implements Target {
         return (Photo) bundle.getParcelable(Constants.ARG_PHOTO);
     }
 
-
-    private void hideProgressBar() {
-        if (mProgressBar != null) {
-            mProgressBar.smoothToHide();
-        }
-    }
-
     @Override
     public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
         if (mPictureImageView != null) {
             mPictureImageView.setImageBitmap(bitmap);
         }
         mPhoto.setBitmap(bitmap);
-        hideProgressBar();
+        showProgressBar(false);
     }
 
     @Override
@@ -89,12 +80,21 @@ public class ItemViewFragment extends Fragment implements Target {
         if (mPictureImageView != null) {
             mPictureImageView.setImageDrawable(errorDrawable);
         }
-        hideProgressBar();
+        showProgressBar(false);
     }
 
     @Override
     public void onPrepareLoad(Drawable placeHolderDrawable) {
+    }
 
+    private void showProgressBar(boolean isEnabled) {
+        if (mProgressBar != null) {
+            if (isEnabled) {
+                mProgressBar.smoothToShow();
+            } else {
+                mProgressBar.smoothToHide();
+            }
+        }
     }
 
     @Override

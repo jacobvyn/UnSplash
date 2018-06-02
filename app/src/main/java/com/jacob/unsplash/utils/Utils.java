@@ -6,7 +6,9 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Environment;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -102,6 +104,12 @@ public class Utils {
         }
         String fileName = String.format("%d.jpg", System.currentTimeMillis());
         return new File(dir, fileName);
+    }
+
+    public static void notifyMediaScanner(File outputFile, AppCompatActivity activity) {
+        Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        intent.setData(Uri.fromFile(outputFile));
+        activity.sendBroadcast(intent);
     }
 
     public interface Callback {

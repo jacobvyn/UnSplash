@@ -14,7 +14,14 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            buildConfigField "String", "UNSPLASH_BASE_URL", UNSPLASH_BASE_URL
         }
+        debug {
+            buildConfigField "String", "UNSPLASH_BASE_URL_DEBUG", UNSPLASH_BASE_URL_DEBUG
+            versionNameSuffix '-debug'
+            debuggable true
+        }
+
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_7

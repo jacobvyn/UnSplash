@@ -1,6 +1,5 @@
-package com.jacob.unsplash.view.adapter;
+package com.jacob.unsplash.view.gallery;
 
-import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -19,14 +18,12 @@ import java.util.List;
  * Created by vynnykiakiv on 3/24/18.
  */
 
-public class PhotoRecycleAdapter extends RecyclerView.Adapter<PhotoRecycleAdapter.PhotoViewHolder> {
+public class GalleryRVAdapter extends RecyclerView.Adapter<GalleryRVAdapter.PhotoViewHolder> {
     private final List<Photo> mPhotoList = new ArrayList<Photo>();
+    private final GalleryContract.Presenter mPresenter;
 
-    private Context mContext;
-    private OnItemClickListener mListener;
-
-    public PhotoRecycleAdapter(Context context) {
-        mContext = context;
+    public GalleryRVAdapter(GalleryContract.Presenter presenter) {
+        mPresenter = presenter;
     }
 
     @NonNull
@@ -50,18 +47,10 @@ public class PhotoRecycleAdapter extends RecyclerView.Adapter<PhotoRecycleAdapte
         return mPhotoList.size();
     }
 
-    public void setOnCLickListener(OnItemClickListener clickListener) {
-        mListener = clickListener;
-    }
-
     public void setList(List<Photo> photoList) {
         mPhotoList.clear();
         mPhotoList.addAll(photoList);
         notifyDataSetChanged();
-    }
-
-    private Photo getItem(int position) {
-        return mPhotoList.get(position);
     }
 
     public ArrayList<Photo> getData() {
@@ -79,13 +68,7 @@ public class PhotoRecycleAdapter extends RecyclerView.Adapter<PhotoRecycleAdapte
 
         @Override
         public void onClick(View view) {
-            if (mListener != null) {
-                mListener.onItemClicked(getItem(getAdapterPosition()), getAdapterPosition());
-            }
+            mPresenter.onPhotoClicked(getAdapterPosition());
         }
-    }
-
-    public interface OnItemClickListener {
-        void onItemClicked(Photo photo, int position);
     }
 }
