@@ -8,6 +8,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Environment;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -110,6 +111,13 @@ public class Utils {
         Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
         intent.setData(Uri.fromFile(outputFile));
         activity.sendBroadcast(intent);
+    }
+
+    public static void addFragment(AppCompatActivity activity, final Fragment fragment, int container_id) {
+        activity.getSupportFragmentManager()
+                .beginTransaction()
+                .replace(container_id, fragment)
+                .commit();
     }
 
     public interface Callback {

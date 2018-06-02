@@ -1,11 +1,11 @@
 package com.jacob.unsplash;
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
 import com.jacob.unsplash.api.UnSplashRepository;
+import com.jacob.unsplash.utils.Utils;
 import com.jacob.unsplash.view.gallery.GalleryFragment;
 import com.jacob.unsplash.view.gallery.GalleryPresenter;
 
@@ -20,20 +20,13 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_main);
         setSupportActionBar(toolbar);
 
-        GalleryFragment galleryFragment = (GalleryFragment) getSupportFragmentManager().findFragmentByTag(GalleryFragment.TAG);
+        GalleryFragment galleryFragment = (GalleryFragment) getSupportFragmentManager().findFragmentById(R.id.gallery_fragment_container);
         if (galleryFragment == null) {
             galleryFragment = GalleryFragment.newInstance();
         }
 
         mPresenter = new GalleryPresenter(this, UnSplashRepository.getInstance(), galleryFragment);
-        addFragment(galleryFragment, GalleryFragment.TAG);
-    }
-
-    private void addFragment(Fragment fragment, String tag) {
-        getSupportFragmentManager()
-                .beginTransaction()
-                .add(R.id.gallery_fragment_container, fragment, tag)
-                .commit();
+        Utils.addFragment(this, galleryFragment, R.id.gallery_fragment_container);
     }
 
     @Override
