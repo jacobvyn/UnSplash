@@ -26,6 +26,7 @@ public class PagerActivity extends AppCompatActivity {
         Utils.addFragment(this, pagerFragment, R.id.pager_fragment_container);
     }
 
+
     private void setToolBar() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_item);
         setSupportActionBar(toolbar);
