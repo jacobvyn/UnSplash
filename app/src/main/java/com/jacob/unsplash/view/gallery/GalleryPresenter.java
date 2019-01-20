@@ -25,6 +25,8 @@ public class GalleryPresenter implements GalleryContract.Presenter {
     private AppCompatActivity mActivity;
     private UnSplashRepository mRepository;
     private final ArrayList<Photo> mPhotoList = new ArrayList<>();
+    public static int START_PAGE = 0;
+
 
 
     public GalleryPresenter(AppCompatActivity activity, UnSplashRepository repository, GalleryContract.View view) {
@@ -36,6 +38,7 @@ public class GalleryPresenter implements GalleryContract.Presenter {
 
     @Override
     public void onPhotoClicked(int position, View view) {
+        START_PAGE = position;
         Intent intent = new Intent(mActivity, PagerActivity.class);
         intent.putParcelableArrayListExtra(Constants.ARG_PHOTO_LIST, mPhotoList);
         intent.putExtra(Constants.ARG_POSITION, position);

@@ -1,6 +1,7 @@
 package com.jacob.unsplash.view.gallery;
 
 import android.support.annotation.NonNull;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +10,7 @@ import android.widget.ImageView;
 
 import com.jacob.unsplash.R;
 import com.jacob.unsplash.model.Photo;
+import com.jacob.unsplash.utils.Constants;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -36,6 +38,7 @@ public class GalleryRVAdapter extends RecyclerView.Adapter<GalleryRVAdapter.Phot
     @Override
     public void onBindViewHolder(@NonNull PhotoViewHolder holder, int position) {
         Photo photo = mPhotoList.get(position);
+        holder.setTransitionName(Constants.SHARED_VIEW_PREFIX + position);
         Picasso.get()
                 .load(photo.getSmall())
                 .error(R.drawable.download_error_place_holder)
@@ -58,7 +61,7 @@ public class GalleryRVAdapter extends RecyclerView.Adapter<GalleryRVAdapter.Phot
     }
 
     protected class PhotoViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        private final ImageView imageView;
+        public final ImageView imageView;
 
         protected PhotoViewHolder(View itemView) {
             super(itemView);
@@ -69,6 +72,11 @@ public class GalleryRVAdapter extends RecyclerView.Adapter<GalleryRVAdapter.Phot
         @Override
         public void onClick(View view) {
             mPresenter.onPhotoClicked(getAdapterPosition(), view);
+        }
+
+        public void setTransitionName(String transName) {
+            imageView.setTag(transName);
+            ViewCompat.setTransitionName(imageView, transName);
         }
     }
 }

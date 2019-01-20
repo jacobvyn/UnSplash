@@ -15,13 +15,18 @@ import android.view.ViewGroup;
 import com.jacob.unsplash.R;
 import com.jacob.unsplash.utils.DepthPageTransformer;
 import com.jacob.unsplash.utils.PermissionHelper;
+import com.jacob.unsplash.view.gallery.GalleryPresenter;
+
+import java.util.List;
+import java.util.Map;
 
 public class PagerFragment extends Fragment
         implements ViewPager.OnPageChangeListener, PagerContract.View, View.OnClickListener {
 
     private PagerContract.Presenter mPresenter;
-    private View mRootView;
     private AppCompatActivity mActivity;
+    public static int CURRENT_PAGE;
+    private ViewPager pager;
 
     public static PagerFragment newInstance() {
         return new PagerFragment();
@@ -44,15 +49,22 @@ public class PagerFragment extends Fragment
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mRootView = view;
         view.findViewById(R.id.item_download_image_view).setOnClickListener(this);
         view.findViewById(R.id.item_share_image_view).setOnClickListener(this);
 
-        ViewPager pager = (ViewPager) view.findViewById(R.id.view_pager);
+        pager = (ViewPager) view.findViewById(R.id.view_pager);
         pager.setPageTransformer(true, new DepthPageTransformer());
         pager.setAdapter(new PhotoPagerAdapter(getChildFragmentManager(), mPresenter.getData()));
-        pager.setOnPageChangeListener(this);
-        pager.setCurrentItem(mPresenter.getCurrentPos());
+        pager.addOnPageChangeListener(this);
+        CURRENT_PAGE = mPresenter.getCurrentPos();
+        pager.setCurrentItem(CURRENT_PAGE);
+        pager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+
+            @Override
+            public void onPageSelected(int position) {
+                CURRENT_PAGE = position;
+            }
+        });
     }
 
     @Override
@@ -94,7 +106,7 @@ public class PagerFragment extends Fragment
         if (PermissionHelper.hasPermission(mActivity)) {
             onDownloadClicked();
         } else {
-            Snackbar.make(mRootView, R.string.error_need_permission, Snackbar.LENGTH_LONG).show();
+            Snackbar.make(getView(), R.string.error_need_permission, Snackbar.LENGTH_LONG).show();
         }
     }
 
@@ -105,7 +117,7 @@ public class PagerFragment extends Fragment
 
     @Override
     public void showMessage(int messageId) {
-        Snackbar.make(mRootView, messageId, Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(getView(), messageId, Snackbar.LENGTH_SHORT).show();
     }
 
     @Override
@@ -125,5 +137,31 @@ public class PagerFragment extends Fragment
     public void onDestroyView() {
         mActivity = null;
         super.onDestroyView();
+    }
+
+    public void onMapSharedElements(List<String> names, Map<String, View> sharedElements) {
+        if (GalleryPresenter.START_PAGE != PagerFragment.CURRENT_PAGE) {
+
+            List<Fragment> fragments = getChildFragmentManager().getFragments();
+            View sharedView = null;
+
+            for (Fragment frag : fragments) {
+                if (frag instanceof PhotoFragment) {
+                    PhotoFragment fragment = (PhotoFragment) frag;
+                    if (fragment.getCurrent() == pager.getCurrentItem()) {
+                        sharedView = fragment.getView().findViewById(R.id.picture_image_view);
+                    }
+                }
+            }
+
+            if (sharedView != null) {
+                String transitionName = sharedView.getTag().toString();
+                names.clear();
+                names.add(transitionName);
+
+                sharedElements.clear();
+                sharedElements.put(transitionName, sharedView);
+            }
+        }
     }
 }

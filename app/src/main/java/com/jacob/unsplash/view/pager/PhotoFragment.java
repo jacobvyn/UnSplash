@@ -5,15 +5,19 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 
 import com.github.chrisbanes.photoview.PhotoView;
 import com.jacob.unsplash.R;
 import com.jacob.unsplash.model.Photo;
 import com.jacob.unsplash.utils.Constants;
+import com.jacob.unsplash.view.gallery.GalleryPresenter;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 import com.wang.avi.AVLoadingIndicatorView;
@@ -36,13 +40,27 @@ public class PhotoFragment extends Fragment implements Target {
     protected View mRootView;
     private Photo mPhoto;
     private Unbinder mUnBinder;
+    private String sharedViewName;
+    private int current = 0;
 
-    public static PhotoFragment newInstance(Photo photo) {
+    public static PhotoFragment newInstance(Photo photo, int position) {
         Bundle bundle = new Bundle();
+        bundle.putString(Constants.SHARED_VIEW, Constants.SHARED_VIEW_PREFIX + position);
+        bundle.putInt(Constants.ARG_POSITION, position);
         bundle.putParcelable(Constants.ARG_PHOTO, photo);
         PhotoFragment fragment = new PhotoFragment();
         fragment.setArguments(bundle);
         return fragment;
+    }
+
+    @Override
+    public void setArguments(@Nullable Bundle args) {
+        super.setArguments(args);
+        if (args != null) {
+            mPhoto = (Photo) args.getParcelable(Constants.ARG_PHOTO);
+            sharedViewName = args.getString(Constants.SHARED_VIEW);
+            current = args.getInt(Constants.ARG_POSITION);
+        }
     }
 
     @Nullable
@@ -50,29 +68,38 @@ public class PhotoFragment extends Fragment implements Target {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_item_view_layout, container, false);
         mUnBinder = ButterKnife.bind(this, view);
+        mPictureImageView.setTag(sharedViewName);
+        ViewCompat.setTransitionName(mPictureImageView, sharedViewName);
         return view;
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        mPhoto = getPhoto(getArguments());
         showProgressBar(true);
         Picasso.get().load(mPhoto.getSmall())
                 .error(android.R.drawable.stat_notify_error)
-                .into(this);
-    }
-
-    private Photo getPhoto(Bundle bundle) {
-        return (Photo) bundle.getParcelable(Constants.ARG_PHOTO);
+                .into(PhotoFragment.this);
     }
 
     @Override
     public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+
+        mPhoto.setBitmap(bitmap);
+        showProgressBar(false);
+        mPictureImageView.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+            @Override
+            public boolean onPreDraw() {
+                mPictureImageView.getViewTreeObserver().removeOnPreDrawListener(this);
+                if (current == GalleryPresenter.START_PAGE) {
+                    ActivityCompat.startPostponedEnterTransition(getActivity());
+                }
+                return true;
+            }
+        });
+
         if (mPictureImageView != null) {
             mPictureImageView.setImageBitmap(bitmap);
         }
-        mPhoto.setBitmap(bitmap);
-        showProgressBar(false);
     }
 
     @Override
@@ -101,5 +128,9 @@ public class PhotoFragment extends Fragment implements Target {
     public void onDestroyView() {
         super.onDestroyView();
         mUnBinder.unbind();
+    }
+
+    public int getCurrent() {
+        return current;
     }
 }

@@ -4,7 +4,9 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -14,12 +16,14 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 
 import com.jacob.unsplash.R;
 import com.jacob.unsplash.model.Photo;
 import com.jacob.unsplash.utils.Utils;
 
 import java.util.List;
+import java.util.Map;
 
 public class GalleryFragment extends Fragment implements SearchView.OnQueryTextListener, GalleryContract.View {
 
@@ -29,6 +33,7 @@ public class GalleryFragment extends Fragment implements SearchView.OnQueryTextL
     private View mProgressBar;
     private GalleryContract.Presenter mPresenter;
     private View mRootView;
+    private RecyclerView recyclerView;
 
 
     public static GalleryFragment newInstance() {
@@ -48,11 +53,12 @@ public class GalleryFragment extends Fragment implements SearchView.OnQueryTextL
         mRootView = view;
         mProgressBar = view.findViewById(R.id.progress_bar_main);
 
-        RecyclerView recyclerView = view.findViewById(R.id.recycler_view);
+        recyclerView = view.findViewById(R.id.recycler_view);
         GridLayoutManager manager = new GridLayoutManager(getActivity(), COLUMNS);
         recyclerView.setLayoutManager(manager);
         mAdapter = new GalleryRVAdapter(mPresenter);
         recyclerView.setAdapter(mAdapter);
+        mPresenter.onSearch("ass");
     }
 
     @Override
@@ -98,6 +104,31 @@ public class GalleryFragment extends Fragment implements SearchView.OnQueryTextL
     public void showProgressBar(boolean isEnabled) {
         if (mProgressBar != null) {
             mProgressBar.setVisibility(isEnabled ? View.VISIBLE : View.GONE);
+        }
+    }
+
+    public void onActivityReenter() {
+        recyclerView.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+            @Override
+            public boolean onPreDraw() {
+                recyclerView.getViewTreeObserver().removeOnPreDrawListener(this);
+                ActivityCompat.startPostponedEnterTransition(getActivity());
+                return true;
+            }
+        });
+    }
+
+    public void onMapSharedElements(List<String> names, Map<String, View> sharedElements, int current) {
+        GalleryRVAdapter.PhotoViewHolder holder = (GalleryRVAdapter.PhotoViewHolder) recyclerView.findViewHolderForAdapterPosition(current);
+        if (holder != null) {
+            View newSharedElement = holder.imageView;
+            if (newSharedElement != null) {
+                String newTransitionName = ViewCompat.getTransitionName(newSharedElement);
+                names.clear();
+                names.add(newTransitionName);
+                sharedElements.clear();
+                sharedElements.put(newTransitionName, newSharedElement);
+            }
         }
     }
 }

@@ -8,4 +8,6 @@ public class Constants {
     public static final String ARG_PHOTO = "ARG_PHOTO";
     public static final String ARG_POSITION = "ARG_POSITION";
     public static final String ARG_PHOTO_LIST = "ARG_PHOTO_LIST";
+    public static final String SHARED_VIEW = "shared_view";
+    public static final String SHARED_VIEW_PREFIX = "shared_view_";
 }
