@@ -68,7 +68,7 @@ public class GalleryRVAdapter extends RecyclerView.Adapter<GalleryRVAdapter.Phot
 
         @Override
         public void onClick(View view) {
-            mPresenter.onPhotoClicked(getAdapterPosition());
+            mPresenter.onPhotoClicked(getAdapterPosition(), view);
         }
     }
 }

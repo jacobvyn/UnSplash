@@ -19,7 +19,7 @@ public interface GalleryContract {
     }
 
     interface Presenter {
-        void onPhotoClicked(int position);
+        void onPhotoClicked(int position, android.view.View view);
 
         void onSearch(String query);
 

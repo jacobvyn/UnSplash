@@ -1,7 +1,10 @@
 package com.jacob.unsplash.view.gallery;
 
 import android.content.Intent;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 
 import com.jacob.unsplash.R;
 import com.jacob.unsplash.api.UnSplashRepository;
@@ -14,7 +17,6 @@ import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
 
 public class GalleryPresenter implements GalleryContract.Presenter {
@@ -33,13 +35,12 @@ public class GalleryPresenter implements GalleryContract.Presenter {
     }
 
     @Override
-    public void onPhotoClicked(int position) {
+    public void onPhotoClicked(int position, View view) {
         Intent intent = new Intent(mActivity, PagerActivity.class);
         intent.putParcelableArrayListExtra(Constants.ARG_PHOTO_LIST, mPhotoList);
         intent.putExtra(Constants.ARG_POSITION, position);
-        if (mActivity != null) {
-            mActivity.startActivity(intent);
-        }
+        ActivityOptionsCompat optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(mActivity, view, view.getTag().toString());
+        ActivityCompat.startActivity(mActivity, intent, optionsCompat.toBundle());
     }
 
     @Override
@@ -48,22 +49,9 @@ public class GalleryPresenter implements GalleryContract.Presenter {
         mDisposables.add(mRepository.search(query)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableObserver<List<Photo>>() {
-
-                    @Override
-                    public void onNext(List<Photo> photos) {
-                        precessResult(photos);
-                    }
-
-                    @Override
-                    public void onError(Throwable trouble) {
-                        mView.onSearchFailed(trouble.getMessage());
-                        mView.showProgressBar(false);
-                    }
-
-                    @Override
-                    public void onComplete() {
-                    }
+                .subscribe(this::precessResult, error -> {
+                    mView.onSearchFailed(error.getMessage());
+                    mView.showProgressBar(false);
                 }));
     }
 
