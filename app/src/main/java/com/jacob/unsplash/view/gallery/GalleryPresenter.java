@@ -1,16 +1,8 @@
 package com.jacob.unsplash.view.gallery;
 
-import android.content.Intent;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.ActivityOptionsCompat;
-import android.support.v7.app.AppCompatActivity;
-import android.view.View;
-
 import com.jacob.unsplash.R;
 import com.jacob.unsplash.api.UnSplashRepository;
 import com.jacob.unsplash.model.Photo;
-import com.jacob.unsplash.utils.Constants;
-import com.jacob.unsplash.PagerActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,30 +12,15 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 
 public class GalleryPresenter implements GalleryContract.Presenter {
-    private final GalleryContract.View mView;
+    private GalleryContract.View mView;
     private final CompositeDisposable mDisposables = new CompositeDisposable();
-    private AppCompatActivity mActivity;
     private UnSplashRepository mRepository;
     private final ArrayList<Photo> mPhotoList = new ArrayList<>();
-    public static int START_PAGE = 0;
 
-
-
-    public GalleryPresenter(AppCompatActivity activity, UnSplashRepository repository, GalleryContract.View view) {
-        mActivity = activity;
+    public GalleryPresenter(UnSplashRepository repository, GalleryContract.View view) {
         mRepository = repository;
         mView = view;
         mView.setPresenter(this);
-    }
-
-    @Override
-    public void onPhotoClicked(int position, View view) {
-        START_PAGE = position;
-        Intent intent = new Intent(mActivity, PagerActivity.class);
-        intent.putParcelableArrayListExtra(Constants.ARG_PHOTO_LIST, mPhotoList);
-        intent.putExtra(Constants.ARG_POSITION, position);
-        ActivityOptionsCompat optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(mActivity, view, view.getTag().toString());
-        ActivityCompat.startActivity(mActivity, intent, optionsCompat.toBundle());
     }
 
     @Override
@@ -64,7 +41,7 @@ public class GalleryPresenter implements GalleryContract.Presenter {
             mPhotoList.addAll(photos);
             mView.onSearchSucceeded(photos);
         } else {
-            mView.onSearchFailed(mActivity.getString(R.string.error_nothing_found));
+            mView.onSearchFailed(R.string.error_nothing_found);
         }
         mView.showProgressBar(false);
     }
@@ -72,5 +49,11 @@ public class GalleryPresenter implements GalleryContract.Presenter {
     @Override
     public void onDestroy() {
         mDisposables.dispose();
+        mView = null;
+    }
+
+    @Override
+    public ArrayList<Photo> getData() {
+        return mPhotoList;
     }
 }

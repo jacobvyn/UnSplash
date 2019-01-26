@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
                     int current = reenterState.getInt(MainActivity.EXTRA_CURRENT_ALBUM_POSITION);
                     if (start != current) {
                         GalleryFragment galleryFragment = (GalleryFragment) getSupportFragmentManager().findFragmentById(R.id.gallery_fragment_container);
-                        galleryFragment.onMapSharedElements(names, sharedElements,current);
+                        galleryFragment.onMapSharedElements(names, sharedElements, current);
                     }
                     reenterState = null;
                 }
@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
             galleryFragment = GalleryFragment.newInstance();
         }
 
-        mPresenter = new GalleryPresenter(this, UnSplashRepository.getInstance(), galleryFragment);
+        mPresenter = new GalleryPresenter(UnSplashRepository.getInstance(), galleryFragment);
         Utils.addFragment(this, galleryFragment, R.id.gallery_fragment_container);
     }
 

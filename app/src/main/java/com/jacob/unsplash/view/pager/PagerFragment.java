@@ -1,35 +1,46 @@
 package com.jacob.unsplash.view.pager;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.jacob.unsplash.PagerActivity;
 import com.jacob.unsplash.R;
+import com.jacob.unsplash.model.Photo;
 import com.jacob.unsplash.utils.DepthPageTransformer;
 import com.jacob.unsplash.utils.PermissionHelper;
-import com.jacob.unsplash.view.gallery.GalleryPresenter;
+import com.jacob.unsplash.utils.Utils;
 
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 
-public class PagerFragment extends Fragment
-        implements ViewPager.OnPageChangeListener, PagerContract.View, View.OnClickListener {
+public class PagerFragment extends Fragment implements PagerContract.View, View.OnClickListener, PagerActivity.CurrentItemProvider {
+    private static final String TYPE_TEXT_PLAIN = "text/plain";
+    private static final String ARG_START_POSITION = "ARG_START_POSITION";
 
     private PagerContract.Presenter mPresenter;
     private AppCompatActivity mActivity;
-    public static int CURRENT_PAGE;
     private ViewPager pager;
+    private int startPosition;
 
-    public static PagerFragment newInstance() {
-        return new PagerFragment();
+    public static PagerFragment newInstance(int startPosition) {
+        Bundle bundle = new Bundle();
+        bundle.putInt(ARG_START_POSITION, startPosition);
+
+        PagerFragment fragment = new PagerFragment();
+        fragment.setArguments(bundle);
+        return fragment;
     }
 
     @Override
@@ -37,6 +48,14 @@ public class PagerFragment extends Fragment
         super.onAttach(context);
         if (context instanceof AppCompatActivity) {
             mActivity = (AppCompatActivity) context;
+        }
+    }
+
+    @Override
+    public void setArguments(@Nullable Bundle args) {
+        super.setArguments(args);
+        if (args != null) {
+            startPosition = args.getInt(ARG_START_POSITION);
         }
     }
 
@@ -54,17 +73,19 @@ public class PagerFragment extends Fragment
 
         pager = (ViewPager) view.findViewById(R.id.view_pager);
         pager.setPageTransformer(true, new DepthPageTransformer());
-        pager.setAdapter(new PhotoPagerAdapter(getChildFragmentManager(), mPresenter.getData()));
-        pager.addOnPageChangeListener(this);
-        CURRENT_PAGE = mPresenter.getCurrentPos();
-        pager.setCurrentItem(CURRENT_PAGE);
         pager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
-
             @Override
             public void onPageSelected(int position) {
-                CURRENT_PAGE = position;
+                mPresenter.setCurrentPos(position);
             }
         });
+        mPresenter.start();
+    }
+
+    @Override
+    public void setData(List<Photo> photoList, int currentPos) {
+        pager.setAdapter(new PhotoPagerAdapter(getChildFragmentManager(), photoList));
+        pager.setCurrentItem(currentPos);
     }
 
     @Override
@@ -90,9 +111,10 @@ public class PagerFragment extends Fragment
     }
 
     private void onShareClicked() {
-        if (mPresenter != null) {
-            mPresenter.onShareClicked();
-        }
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.setType(TYPE_TEXT_PLAIN);
+        shareIntent.putExtra(Intent.EXTRA_TEXT, mPresenter.getCurrentUrl());
+        startActivity(Intent.createChooser(shareIntent, mActivity.getString(R.string.share_picture)));
     }
 
     private void onDownloadClicked() {
@@ -121,41 +143,37 @@ public class PagerFragment extends Fragment
     }
 
     @Override
-    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-    }
-
-    @Override
-    public void onPageSelected(int position) {
-        mPresenter.setCurrentPos(position);
-    }
-
-    @Override
-    public void onPageScrollStateChanged(int state) {
+    public void onSaveSuccess(File file) {
+        Utils.notifyMediaScanner(file, mActivity);
+        showMessage(R.string.success_save);
     }
 
     @Override
     public void onDestroyView() {
         mActivity = null;
+        if (mPresenter != null) {
+            mPresenter.release();
+        }
         super.onDestroyView();
     }
 
     public void onMapSharedElements(List<String> names, Map<String, View> sharedElements) {
-        if (GalleryPresenter.START_PAGE != PagerFragment.CURRENT_PAGE) {
+        if (startPosition != getCurrentItem()) {
 
             List<Fragment> fragments = getChildFragmentManager().getFragments();
             View sharedView = null;
 
             for (Fragment frag : fragments) {
                 if (frag instanceof PhotoFragment) {
-                    PhotoFragment fragment = (PhotoFragment) frag;
-                    if (fragment.getCurrent() == pager.getCurrentItem()) {
-                        sharedView = fragment.getView().findViewById(R.id.picture_image_view);
+                    PhotoFragment photoFragment = (PhotoFragment) frag;
+                    if (photoFragment.getCurrent() == getCurrentItem()) {
+                        sharedView = photoFragment.getView().findViewById(R.id.picture_image_view);
                     }
                 }
             }
 
             if (sharedView != null) {
-                String transitionName = sharedView.getTag().toString();
+                String transitionName = ViewCompat.getTransitionName(sharedView);
                 names.clear();
                 names.add(transitionName);
 
@@ -163,5 +181,14 @@ public class PagerFragment extends Fragment
                 sharedElements.put(transitionName, sharedView);
             }
         }
+    }
+
+    @Override
+    public int getCurrentItem() {
+        return pager.getCurrentItem();
+    }
+
+    public int getStartPosition() {
+        return startPosition;
     }
 }

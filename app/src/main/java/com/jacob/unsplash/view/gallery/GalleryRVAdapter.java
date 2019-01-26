@@ -22,10 +22,10 @@ import java.util.List;
 
 public class GalleryRVAdapter extends RecyclerView.Adapter<GalleryRVAdapter.PhotoViewHolder> {
     private final List<Photo> mPhotoList = new ArrayList<Photo>();
-    private final GalleryContract.Presenter mPresenter;
+    private OnItemClickListener mListener;
 
-    public GalleryRVAdapter(GalleryContract.Presenter presenter) {
-        mPresenter = presenter;
+    public GalleryRVAdapter(OnItemClickListener listener) {
+        mListener = listener;
     }
 
     @NonNull
@@ -56,10 +56,6 @@ public class GalleryRVAdapter extends RecyclerView.Adapter<GalleryRVAdapter.Phot
         notifyDataSetChanged();
     }
 
-    public ArrayList<Photo> getData() {
-        return new ArrayList<>(mPhotoList);
-    }
-
     protected class PhotoViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public final ImageView imageView;
 
@@ -71,7 +67,9 @@ public class GalleryRVAdapter extends RecyclerView.Adapter<GalleryRVAdapter.Phot
 
         @Override
         public void onClick(View view) {
-            mPresenter.onPhotoClicked(getAdapterPosition(), view);
+            if (mListener != null) {
+                mListener.onItemClicked(getAdapterPosition(), view);
+            }
         }
 
         public void setTransitionName(String transName) {

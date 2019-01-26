@@ -17,7 +17,7 @@ import com.github.chrisbanes.photoview.PhotoView;
 import com.jacob.unsplash.R;
 import com.jacob.unsplash.model.Photo;
 import com.jacob.unsplash.utils.Constants;
-import com.jacob.unsplash.view.gallery.GalleryPresenter;
+import com.jacob.unsplash.view.gallery.GalleryFragment;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 import com.wang.avi.AVLoadingIndicatorView;
@@ -90,7 +90,7 @@ public class PhotoFragment extends Fragment implements Target {
             @Override
             public boolean onPreDraw() {
                 mPictureImageView.getViewTreeObserver().removeOnPreDrawListener(this);
-                if (current == GalleryPresenter.START_PAGE) {
+                if (isStartPage()) {
                     ActivityCompat.startPostponedEnterTransition(getActivity());
                 }
                 return true;
@@ -132,5 +132,13 @@ public class PhotoFragment extends Fragment implements Target {
 
     public int getCurrent() {
         return current;
+    }
+
+    public boolean isStartPage() {
+        if (getParentFragment() instanceof PagerFragment) {
+            PagerFragment fragment = (PagerFragment) getParentFragment();
+            return current == fragment.getStartPosition();
+
+        } else return false;
     }
 }

@@ -3,6 +3,7 @@ package com.jacob.unsplash.view.gallery;
 import com.jacob.unsplash.model.Photo;
 import com.jacob.unsplash.view.BaseView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -15,14 +16,16 @@ public interface GalleryContract {
 
         void onSearchSucceeded(List<Photo> photoList);
 
+        void onSearchFailed(int message);
+
         void onSearchFailed(String message);
     }
 
     interface Presenter {
-        void onPhotoClicked(int position, android.view.View view);
-
         void onSearch(String query);
 
         void onDestroy();
+
+        ArrayList<Photo> getData();
     }
 }

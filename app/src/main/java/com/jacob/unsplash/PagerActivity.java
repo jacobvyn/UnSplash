@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.SharedElementCallback;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -12,16 +13,19 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 
+import com.jacob.unsplash.model.Photo;
+import com.jacob.unsplash.utils.Constants;
 import com.jacob.unsplash.utils.Utils;
-import com.jacob.unsplash.view.gallery.GalleryPresenter;
 import com.jacob.unsplash.view.pager.PagerFragment;
 import com.jacob.unsplash.view.pager.PagerPresenter;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public class PagerActivity extends AppCompatActivity {
     boolean isReturning = false;
+    private int startPosition;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -40,16 +44,19 @@ public class PagerActivity extends AppCompatActivity {
             }
         });
         setToolBar();
-        PagerFragment pagerFragment = (PagerFragment) getSupportFragmentManager().findFragmentById(R.id.pager_fragment_container);
 
-        if (pagerFragment == null) {
-            pagerFragment = PagerFragment.newInstance();
+
+        Bundle bundle = getIntent().getExtras();
+        if (bundle != null) {
+            ArrayList<Photo> data = bundle.getParcelableArrayList(Constants.ARG_PHOTO_LIST);
+            int currentPage = bundle.getInt(Constants.ARG_POSITION);
+            startPosition = currentPage;
+            PagerFragment pagerFragment = PagerFragment.newInstance(startPosition);
+            PagerPresenter presenter = new PagerPresenter(pagerFragment, data, currentPage);
+            pagerFragment.setPresenter(presenter);
+            Utils.addFragment(this, pagerFragment, R.id.pager_fragment_container);
         }
-
-        new PagerPresenter(PagerActivity.this, pagerFragment);
-        Utils.addFragment(this, pagerFragment, R.id.pager_fragment_container);
     }
-
 
     private void setToolBar() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_item);
@@ -71,11 +78,20 @@ public class PagerActivity extends AppCompatActivity {
 
     @Override
     public void finishAfterTransition() {
-        isReturning = true;
-        Intent intent = new Intent();
-        intent.putExtra(MainActivity.EXTRA_STARTING_ALBUM_POSITION, GalleryPresenter.START_PAGE);
-        intent.putExtra(MainActivity.EXTRA_CURRENT_ALBUM_POSITION, PagerFragment.CURRENT_PAGE);
-        setResult(Activity.RESULT_OK, intent);
-        super.finishAfterTransition();
+        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.pager_fragment_container);
+
+        if (fragment instanceof CurrentItemProvider) {
+            isReturning = true;
+            Intent intent = new Intent();
+            CurrentItemProvider provider = (CurrentItemProvider) fragment;
+            intent.putExtra(MainActivity.EXTRA_STARTING_ALBUM_POSITION, startPosition);
+            intent.putExtra(MainActivity.EXTRA_CURRENT_ALBUM_POSITION, provider.getCurrentItem());
+            setResult(Activity.RESULT_OK, intent);
+            super.finishAfterTransition();
+        }
+    }
+
+    public interface CurrentItemProvider {
+        int getCurrentItem();
     }
 }

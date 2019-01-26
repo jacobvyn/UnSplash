@@ -1,10 +1,12 @@
 package com.jacob.unsplash.view.gallery;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.GridLayoutManager;
@@ -18,16 +20,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 
+import com.jacob.unsplash.PagerActivity;
 import com.jacob.unsplash.R;
 import com.jacob.unsplash.model.Photo;
+import com.jacob.unsplash.utils.Constants;
 import com.jacob.unsplash.utils.Utils;
 
 import java.util.List;
 import java.util.Map;
 
-public class GalleryFragment extends Fragment implements SearchView.OnQueryTextListener, GalleryContract.View {
+public class GalleryFragment extends Fragment implements SearchView.OnQueryTextListener, GalleryContract.View, OnItemClickListener {
 
-    public static final String TAG = GalleryFragment.class.getName();
     private static final int COLUMNS = 2;
     private GalleryRVAdapter mAdapter;
     private View mProgressBar;
@@ -56,7 +59,7 @@ public class GalleryFragment extends Fragment implements SearchView.OnQueryTextL
         recyclerView = view.findViewById(R.id.recycler_view);
         GridLayoutManager manager = new GridLayoutManager(getActivity(), COLUMNS);
         recyclerView.setLayoutManager(manager);
-        mAdapter = new GalleryRVAdapter(mPresenter);
+        mAdapter = new GalleryRVAdapter(this);
         recyclerView.setAdapter(mAdapter);
         mPresenter.onSearch("ass");
     }
@@ -75,6 +78,10 @@ public class GalleryFragment extends Fragment implements SearchView.OnQueryTextL
         if (mAdapter != null) {
             mAdapter.setList(photoList);
         }
+    }
+
+    public void onSearchFailed(int resId) {
+        onSearchFailed(getString(resId));
     }
 
     public void onSearchFailed(String message) {
@@ -130,5 +137,16 @@ public class GalleryFragment extends Fragment implements SearchView.OnQueryTextL
                 sharedElements.put(newTransitionName, newSharedElement);
             }
         }
+    }
+
+    @Override
+    public void onItemClicked(int position, View view) {
+        Intent intent = new Intent(getActivity(), PagerActivity.class);
+        intent.putParcelableArrayListExtra(Constants.ARG_PHOTO_LIST, mPresenter.getData());
+        intent.putExtra(Constants.ARG_POSITION, position);
+
+        String transitionName = ViewCompat.getTransitionName(view);
+        ActivityOptionsCompat optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(), view, transitionName);
+        ActivityCompat.startActivity(getActivity(), intent, optionsCompat.toBundle());
     }
 }
