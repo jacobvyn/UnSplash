@@ -13,11 +13,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 
-import com.github.chrisbanes.photoview.PhotoView;
 import com.jacob.unsplash.R;
 import com.jacob.unsplash.model.Photo;
 import com.jacob.unsplash.utils.Constants;
-import com.jacob.unsplash.view.gallery.GalleryFragment;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 import com.wang.avi.AVLoadingIndicatorView;
@@ -33,7 +31,7 @@ import butterknife.Unbinder;
 public class PhotoFragment extends Fragment implements Target {
 
     @BindView(R.id.picture_image_view)
-    protected PhotoView mPictureImageView;
+    protected JacobsImageView mPictureImageView;
     @BindView(R.id.progress_bar)
     protected AVLoadingIndicatorView mProgressBar;
     @BindView(R.id.detail_fragment_root)
@@ -69,6 +67,11 @@ public class PhotoFragment extends Fragment implements Target {
         View view = inflater.inflate(R.layout.fragment_item_view_layout, container, false);
         mUnBinder = ButterKnife.bind(this, view);
         mPictureImageView.setTag(sharedViewName);
+
+        if (getParentFragment() instanceof OnPositionChangedListener) {
+            OnPositionChangedListener listener = (OnPositionChangedListener) getParentFragment();
+            mPictureImageView.setListener(listener);
+        }
         ViewCompat.setTransitionName(mPictureImageView, sharedViewName);
         return view;
     }

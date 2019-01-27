@@ -7,7 +7,7 @@
     android:layout_centerInParent="true"
     android:background="@android:color/transparent">
 
-    <com.github.chrisbanes.photoview.PhotoView
+    <com.jacob.unsplash.view.pager.JacobsImageView
         android:id="@+id/picture_image_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />

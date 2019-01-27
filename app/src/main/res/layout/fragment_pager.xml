@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_marginTop="?attr/actionBarSize"
+    android:background="@color/colorPrimary"
     app:layout_behavior="com.jacob.unsplash.utils.MoveUpwardBehavior">
 
     <android.support.v4.view.ViewPager
@@ -15,9 +16,10 @@
         android:id="@+id/item_controls_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
         android:layout_margin="@dimen/item_controls_layout_margin"
+        android:orientation="horizontal"
         android:visibility="visible">
 
         <ImageView

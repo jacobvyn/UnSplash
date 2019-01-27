@@ -9,10 +9,12 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.jacob.unsplash.PagerActivity;
 import com.jacob.unsplash.R;
@@ -25,7 +27,7 @@ import java.io.File;
 import java.util.List;
 import java.util.Map;
 
-public class PagerFragment extends Fragment implements PagerContract.View, View.OnClickListener, PagerActivity.CurrentItemProvider {
+public class PagerFragment extends Fragment implements PagerContract.View, View.OnClickListener, PagerActivity.CurrentItemProvider, OnPositionChangedListener {
     private static final String TYPE_TEXT_PLAIN = "text/plain";
     private static final String ARG_START_POSITION = "ARG_START_POSITION";
 
@@ -67,16 +69,17 @@ public class PagerFragment extends Fragment implements PagerContract.View, View.
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        view.getBackground().setAlpha(255);
         super.onViewCreated(view, savedInstanceState);
         view.findViewById(R.id.item_download_image_view).setOnClickListener(this);
         view.findViewById(R.id.item_share_image_view).setOnClickListener(this);
-
         pager = (ViewPager) view.findViewById(R.id.view_pager);
         pager.setPageTransformer(true, new DepthPageTransformer());
         pager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
                 mPresenter.setCurrentPos(position);
+                getToolbar().show();
             }
         });
         mPresenter.start();
@@ -190,5 +193,41 @@ public class PagerFragment extends Fragment implements PagerContract.View, View.
 
     public int getStartPosition() {
         return startPosition;
+    }
+
+    public ActionBar getToolbar() {
+        return ((AppCompatActivity) getActivity()).getSupportActionBar();
+    }
+
+    private void finishWithAnim() {
+        if (getActivity() != null) {
+            getActivity().supportFinishAfterTransition();
+        }
+    }
+
+    @Override
+    public void onStartDrag() {
+        getToolbar().hide();
+    }
+
+    @Override
+    public void onYChanged(float newTopLeftY) {
+        if (newTopLeftY > -256 && newTopLeftY < 256) {
+            int alpha = (int) (255 - Math.abs(newTopLeftY));
+            if (getView() != null) {
+                getView().getBackground().setAlpha(alpha);
+            }
+        }
+    }
+
+    @Override
+    public boolean onDrop(float newTopLeftY) {
+        if (newTopLeftY < -256 || newTopLeftY > 256) {
+            finishWithAnim();
+            return true;
+        } else {
+            getToolbar().show();
+            return false;
+        }
     }
 }

@@ -3,8 +3,7 @@
     android:id="@+id/activity_detail_root"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_centerInParent="true"
-    android:background="@color/colorPrimaryDark">
+    android:layout_centerInParent="true">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/toolbar_item_layout"
