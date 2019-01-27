@@ -9,7 +9,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewCompat;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
@@ -57,7 +56,8 @@ public class GalleryFragment extends Fragment implements SearchView.OnQueryTextL
         mProgressBar = view.findViewById(R.id.progress_bar_main);
 
         recyclerView = view.findViewById(R.id.recycler_view);
-        GridLayoutManager manager = new GridLayoutManager(getActivity(), COLUMNS);
+        ImprovedGridLayoutManager manager = new ImprovedGridLayoutManager(getActivity(), COLUMNS);
+        manager.setChildViewId(R.id.item_image_view);
         recyclerView.setLayoutManager(manager);
         mAdapter = new GalleryRVAdapter(this);
         recyclerView.setAdapter(mAdapter);
@@ -141,9 +141,19 @@ public class GalleryFragment extends Fragment implements SearchView.OnQueryTextL
 
     @Override
     public void onItemClicked(int position, View view) {
+        RecyclerView.LayoutManager layoutManager = recyclerView.getLayoutManager();
+        int firstVisible = 0;
+        int lastVisible = 0;
+        if (layoutManager instanceof ImprovedGridLayoutManager) {
+            ImprovedGridLayoutManager manager = (ImprovedGridLayoutManager) layoutManager;
+            firstVisible = manager.getFirstVisiblePosition();
+            lastVisible = manager.getLastVisiblePosition();
+        }
         Intent intent = new Intent(getActivity(), PagerActivity.class);
         intent.putParcelableArrayListExtra(Constants.ARG_PHOTO_LIST, mPresenter.getData());
         intent.putExtra(Constants.ARG_POSITION, position);
+        intent.putExtra(Constants.ARG_FIRST_VISIBLE_POSITION, firstVisible);
+        intent.putExtra(Constants.ARG_LAST_VISIBLE_POSITION, lastVisible);
 
         String transitionName = ViewCompat.getTransitionName(view);
         ActivityOptionsCompat optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(), view, transitionName);

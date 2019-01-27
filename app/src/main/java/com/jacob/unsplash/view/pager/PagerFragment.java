@@ -14,7 +14,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.jacob.unsplash.PagerActivity;
 import com.jacob.unsplash.R;
@@ -27,18 +26,25 @@ import java.io.File;
 import java.util.List;
 import java.util.Map;
 
-public class PagerFragment extends Fragment implements PagerContract.View, View.OnClickListener, PagerActivity.CurrentItemProvider, OnPositionChangedListener {
+public class PagerFragment extends Fragment implements PagerContract.View, View.OnClickListener, PagerActivity.CurrentItemProvider, OnDragListener {
     private static final String TYPE_TEXT_PLAIN = "text/plain";
     private static final String ARG_START_POSITION = "ARG_START_POSITION";
+    private static final String ARG_FIRST_VISIBLE_POSITION = "ARG_FIRST_VISIBLE_POSITION";
+    private static final String ARG_LAST_VISIBLE_POSITION = "ARG_LAST_VISIBLE_POSITION";
 
     private PagerContract.Presenter mPresenter;
     private AppCompatActivity mActivity;
     private ViewPager pager;
     private int startPosition;
+    private int lastPosition;
+    private int firstPosition;
+    private View controls;
 
-    public static PagerFragment newInstance(int startPosition) {
+    public static PagerFragment newInstance(int startPosition, int firstVisible, int lastVisible) {
         Bundle bundle = new Bundle();
         bundle.putInt(ARG_START_POSITION, startPosition);
+        bundle.putInt(ARG_FIRST_VISIBLE_POSITION, firstVisible);
+        bundle.putInt(ARG_LAST_VISIBLE_POSITION, lastVisible);
 
         PagerFragment fragment = new PagerFragment();
         fragment.setArguments(bundle);
@@ -58,6 +64,8 @@ public class PagerFragment extends Fragment implements PagerContract.View, View.
         super.setArguments(args);
         if (args != null) {
             startPosition = args.getInt(ARG_START_POSITION);
+            firstPosition = args.getInt(ARG_FIRST_VISIBLE_POSITION);
+            lastPosition = args.getInt(ARG_LAST_VISIBLE_POSITION);
         }
     }
 
@@ -80,9 +88,11 @@ public class PagerFragment extends Fragment implements PagerContract.View, View.
             public void onPageSelected(int position) {
                 mPresenter.setCurrentPos(position);
                 getToolbar().show();
+                showControls(true);
             }
         });
         mPresenter.start();
+        controls = view.findViewById(R.id.item_controls_layout);
     }
 
     @Override
@@ -161,29 +171,34 @@ public class PagerFragment extends Fragment implements PagerContract.View, View.
     }
 
     public void onMapSharedElements(List<String> names, Map<String, View> sharedElements) {
-        if (startPosition != getCurrentItem()) {
+        View sharedView = null;
+        List<Fragment> fragments = getChildFragmentManager().getFragments();
 
-            List<Fragment> fragments = getChildFragmentManager().getFragments();
-            View sharedView = null;
-
-            for (Fragment frag : fragments) {
-                if (frag instanceof PhotoFragment) {
-                    PhotoFragment photoFragment = (PhotoFragment) frag;
-                    if (photoFragment.getCurrent() == getCurrentItem()) {
-                        sharedView = photoFragment.getView().findViewById(R.id.picture_image_view);
-                    }
+        int currentItem = getCurrentItem();
+        for (Fragment frag : fragments) {
+            if (frag instanceof PhotoFragment) {
+                PhotoFragment photoFragment = (PhotoFragment) frag;
+                if (photoFragment.getCurrent() == currentItem) {
+                    sharedView = photoFragment.getView().findViewById(R.id.picture_image_view);
                 }
             }
-
-            if (sharedView != null) {
-                String transitionName = ViewCompat.getTransitionName(sharedView);
-                names.clear();
-                names.add(transitionName);
-
-                sharedElements.clear();
-                sharedElements.put(transitionName, sharedView);
-            }
         }
+        if (firstPosition <= currentItem && currentItem <= lastPosition) {
+            if (startPosition != currentItem) {
+                if (sharedView != null) {
+                    String transitionName = ViewCompat.getTransitionName(sharedView);
+                    names.clear();
+                    names.add(transitionName);
+
+                    sharedElements.clear();
+                    sharedElements.put(transitionName, sharedView);
+                }
+            }
+        } else {
+            names.clear();
+            sharedElements.clear();
+        }
+
     }
 
     @Override
@@ -208,10 +223,11 @@ public class PagerFragment extends Fragment implements PagerContract.View, View.
     @Override
     public void onStartDrag() {
         getToolbar().hide();
+        showControls(false);
     }
 
     @Override
-    public void onYChanged(float newTopLeftY) {
+    public void onDragUpdate(float newTopLeftY) {
         if (newTopLeftY > -256 && newTopLeftY < 256) {
             int alpha = (int) (255 - Math.abs(newTopLeftY));
             if (getView() != null) {
@@ -221,13 +237,20 @@ public class PagerFragment extends Fragment implements PagerContract.View, View.
     }
 
     @Override
-    public boolean onDrop(float newTopLeftY) {
+    public boolean onStopDrag(float newTopLeftY) {
         if (newTopLeftY < -256 || newTopLeftY > 256) {
             finishWithAnim();
             return true;
         } else {
             getToolbar().show();
+            showControls(true);
             return false;
+        }
+    }
+
+    private void showControls(boolean show) {
+        if (controls != null) {
+            controls.setVisibility(show ? View.VISIBLE : View.GONE);
         }
     }
 }

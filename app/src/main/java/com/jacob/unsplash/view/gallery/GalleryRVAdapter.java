@@ -38,7 +38,7 @@ public class GalleryRVAdapter extends RecyclerView.Adapter<GalleryRVAdapter.Phot
     @Override
     public void onBindViewHolder(@NonNull PhotoViewHolder holder, int position) {
         Photo photo = mPhotoList.get(position);
-        holder.setTransitionName(Constants.SHARED_VIEW_PREFIX + position);
+        holder.setTransitionName(Constants.SHARED_VIEW_PREFIX + position, position);
         Picasso.get()
                 .load(photo.getSmall())
                 .error(R.drawable.download_error_place_holder)
@@ -72,8 +72,8 @@ public class GalleryRVAdapter extends RecyclerView.Adapter<GalleryRVAdapter.Phot
             }
         }
 
-        public void setTransitionName(String transName) {
-            imageView.setTag(transName);
+        public void setTransitionName(String transName, int position) {
+            imageView.setTag(position);
             ViewCompat.setTransitionName(imageView, transName);
         }
     }

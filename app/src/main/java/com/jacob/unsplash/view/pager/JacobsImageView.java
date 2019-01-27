@@ -10,7 +10,7 @@ import android.view.MotionEvent;
 import android.view.View;
 
 public class JacobsImageView extends android.support.v7.widget.AppCompatImageView {
-    private OnPositionChangedListener listener;
+    private com.jacob.unsplash.view.pager.OnDragListener listener;
     private float mYDiffInTouchPointAndViewTopLeftCorner;
     private SpringAnimation mSpringTranslationYAnimation;
 
@@ -39,7 +39,7 @@ public class JacobsImageView extends android.support.v7.widget.AppCompatImageVie
         mSpringTranslationYAnimation.setSpring(springForceY);
         mSpringTranslationYAnimation.addUpdateListener((animation, value, velocity) -> {
             if (listener != null) {
-                listener.onYChanged(value);
+                listener.onDragUpdate(value);
             }
         });
     }
@@ -56,12 +56,12 @@ public class JacobsImageView extends android.support.v7.widget.AppCompatImageVie
             case MotionEvent.ACTION_MOVE: {
                 float newTopLeftY = event.getRawY() - mYDiffInTouchPointAndViewTopLeftCorner;
                 setY(newTopLeftY);
-                onYChanged(newTopLeftY);
+                onDragUpdate(newTopLeftY);
                 break;
             }
             case MotionEvent.ACTION_UP: {
                 float newTop = event.getRawY() - mYDiffInTouchPointAndViewTopLeftCorner;
-                boolean handled = onDrop(newTop);
+                boolean handled = onStopDrag(newTop);
                 if (!handled) {
                     mSpringTranslationYAnimation.start();
                 }
@@ -77,21 +77,21 @@ public class JacobsImageView extends android.support.v7.widget.AppCompatImageVie
         }
     }
 
-    private void onYChanged(float newTopLeftY) {
+    private void onDragUpdate(float newTopLeftY) {
         if (listener != null) {
-            listener.onYChanged(newTopLeftY);
+            listener.onDragUpdate(newTopLeftY);
         }
     }
 
-    private boolean onDrop(float newTop) {
+    private boolean onStopDrag(float newTop) {
         if (listener != null) {
-            return listener.onDrop(newTop);
+            return listener.onStopDrag(newTop);
         } else {
             return false;
         }
     }
 
-    void setListener(OnPositionChangedListener listener) {
+    void setListener(com.jacob.unsplash.view.pager.OnDragListener listener) {
         this.listener = listener;
     }
 }

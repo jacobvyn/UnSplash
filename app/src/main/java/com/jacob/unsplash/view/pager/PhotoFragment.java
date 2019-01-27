@@ -38,12 +38,10 @@ public class PhotoFragment extends Fragment implements Target {
     protected View mRootView;
     private Photo mPhoto;
     private Unbinder mUnBinder;
-    private String sharedViewName;
     private int current = 0;
 
     public static PhotoFragment newInstance(Photo photo, int position) {
         Bundle bundle = new Bundle();
-        bundle.putString(Constants.SHARED_VIEW, Constants.SHARED_VIEW_PREFIX + position);
         bundle.putInt(Constants.ARG_POSITION, position);
         bundle.putParcelable(Constants.ARG_PHOTO, photo);
         PhotoFragment fragment = new PhotoFragment();
@@ -56,7 +54,6 @@ public class PhotoFragment extends Fragment implements Target {
         super.setArguments(args);
         if (args != null) {
             mPhoto = (Photo) args.getParcelable(Constants.ARG_PHOTO);
-            sharedViewName = args.getString(Constants.SHARED_VIEW);
             current = args.getInt(Constants.ARG_POSITION);
         }
     }
@@ -66,13 +63,13 @@ public class PhotoFragment extends Fragment implements Target {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_item_view_layout, container, false);
         mUnBinder = ButterKnife.bind(this, view);
-        mPictureImageView.setTag(sharedViewName);
+        mPictureImageView.setTag(current);
 
-        if (getParentFragment() instanceof OnPositionChangedListener) {
-            OnPositionChangedListener listener = (OnPositionChangedListener) getParentFragment();
+        if (getParentFragment() instanceof OnDragListener) {
+            OnDragListener listener = (OnDragListener) getParentFragment();
             mPictureImageView.setListener(listener);
         }
-        ViewCompat.setTransitionName(mPictureImageView, sharedViewName);
+        ViewCompat.setTransitionName(mPictureImageView, Constants.SHARED_VIEW_PREFIX + current);
         return view;
     }
 

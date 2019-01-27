@@ -45,13 +45,14 @@ public class PagerActivity extends AppCompatActivity {
         });
         setToolBar();
 
-
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
             ArrayList<Photo> data = bundle.getParcelableArrayList(Constants.ARG_PHOTO_LIST);
             int currentPage = bundle.getInt(Constants.ARG_POSITION);
+            int firstVisible = bundle.getInt(Constants.ARG_FIRST_VISIBLE_POSITION);
+            int lastVisible = bundle.getInt(Constants.ARG_LAST_VISIBLE_POSITION);
             startPosition = currentPage;
-            PagerFragment pagerFragment = PagerFragment.newInstance(startPosition);
+            PagerFragment pagerFragment = PagerFragment.newInstance(startPosition, firstVisible, lastVisible);
             PagerPresenter presenter = new PagerPresenter(pagerFragment, data, currentPage);
             pagerFragment.setPresenter(presenter);
             Utils.addFragment(this, pagerFragment, R.id.pager_fragment_container);
