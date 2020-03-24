@@ -11,8 +11,10 @@ import android.view.View;
 
 public class JacobsImageView extends android.support.v7.widget.AppCompatImageView {
     private com.jacob.unsplash.view.pager.OnDragListener listener;
-    private float mYDiffInTouchPointAndViewTopLeftCorner;
-    private SpringAnimation mSpringTranslationYAnimation;
+    private float diffY;
+    private float diffX;
+    private SpringAnimation mSpringYAnimation;
+    private SpringAnimation mSpringXAnimation;
 
     public JacobsImageView(Context context) {
         super(context);
@@ -31,13 +33,15 @@ public class JacobsImageView extends android.support.v7.widget.AppCompatImageVie
 
     private void init() {
         setOnTouchListener(onTouchListener);
-        mSpringTranslationYAnimation = new SpringAnimation(this, DynamicAnimation.TRANSLATION_Y, 0);
+        mSpringYAnimation = new SpringAnimation(this, DynamicAnimation.TRANSLATION_Y, 0);
+        mSpringXAnimation = new SpringAnimation(this, DynamicAnimation.TRANSLATION_X, 0);
 
         SpringForce springForceY = new SpringForce(0f);
         springForceY.setStiffness(SpringForce.STIFFNESS_MEDIUM);
         springForceY.setDampingRatio(SpringForce.DAMPING_RATIO_NO_BOUNCY);
-        mSpringTranslationYAnimation.setSpring(springForceY);
-        mSpringTranslationYAnimation.addUpdateListener((animation, value, velocity) -> {
+        mSpringYAnimation.setSpring(springForceY);
+        mSpringXAnimation.setSpring(springForceY);
+        mSpringYAnimation.addUpdateListener((animation, value, velocity) -> {
             if (listener != null) {
                 listener.onDragUpdate(value);
             }
@@ -48,22 +52,26 @@ public class JacobsImageView extends android.support.v7.widget.AppCompatImageVie
     private View.OnTouchListener onTouchListener = (v, event) -> {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN: {
-                mYDiffInTouchPointAndViewTopLeftCorner = event.getRawY() - v.getY();
-                mSpringTranslationYAnimation.cancel();
+                diffY = event.getRawY() - v.getY();
+                diffX = event.getRawX() - v.getX();
+                mSpringYAnimation.cancel();
                 onStartDrag();
                 break;
             }
             case MotionEvent.ACTION_MOVE: {
-                float newTopLeftY = event.getRawY() - mYDiffInTouchPointAndViewTopLeftCorner;
+                float newTopLeftY = event.getRawY() - diffY;
+                float newTopLeftX = event.getRawX() - diffX;
                 setY(newTopLeftY);
+                setX(newTopLeftX);
                 onDragUpdate(newTopLeftY);
                 break;
             }
             case MotionEvent.ACTION_UP: {
-                float newTop = event.getRawY() - mYDiffInTouchPointAndViewTopLeftCorner;
+                float newTop = event.getRawY() - diffY;
                 boolean handled = onStopDrag(newTop);
                 if (!handled) {
-                    mSpringTranslationYAnimation.start();
+                    mSpringYAnimation.start();
+                    mSpringXAnimation.start();
                 }
                 break;
             }
